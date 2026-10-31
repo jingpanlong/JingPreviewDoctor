@@ -1,0 +1,2 @@
+2166d1dc8522dcf249559729221af37f91e986a43471eaa83d5d9c27fde0b0e6 *JingPreviewDoctor.exe
+fa0366283702e78c66f75b0246f5954b82a7a08cd1e24b4406b4de28c2c6da0b *JingPreviewDoctor-Setup.exe

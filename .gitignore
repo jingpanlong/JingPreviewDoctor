@@ -1,0 +1,10 @@
+# Build output (exes are published via GitHub Releases, not committed)
+/dist/
+
+# OS / editor noise
+Thumbs.db
+Desktop.ini
+*.user
+.vs/
+.idea/
+.vscode/

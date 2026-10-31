@@ -1,0 +1,43 @@
+using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Reflection;
+using System.Windows.Forms;
+using Microsoft.Win32;
+class Setup {
+ static string Target=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),@"Programs\JingPreviewDoctor");
+ static string Menu=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs),"景览图片预览修复助手");
+ static string UninstallKey=@"Software\Microsoft\Windows\CurrentVersion\Uninstall\JingPreviewDoctor";
+ [STAThread]static int Main(string[] args){Application.EnableVisualStyles();try{
+  if(args.Length==2&&args[0]=="--self-test")return SelfTest(args[1]);
+  if(args.Length==2&&args[0]=="--extract"){Directory.CreateDirectory(args[1]);Extract("App",Path.Combine(args[1],"JingPreviewDoctor.exe"));Extract("Readme",Path.Combine(args[1],"使用说明.txt"));return 0;}
+  if(args.Length==2&&args[0]=="--uninstall-worker"){try{using(Process parent=Process.GetProcessById(Int32.Parse(args[1])))parent.WaitForExit(10000);}catch(ArgumentException){}Uninstall();MessageBox.Show("卸载完成。保留了日志与设置备份。\r\n临时卸载助手可由系统临时文件清理移除。");return 0;}
+  if(args.Length>0&&args[0]=="--uninstall"){if(MessageBox.Show("卸载景览程序和开始菜单入口？\r\n您生成的图片、日志和设置备份会保留。","景览卸载",MessageBoxButtons.YesNo)!=DialogResult.Yes)return 0;string temp=Path.Combine(Path.GetTempPath(),"JingPreview-Uninstall-"+Guid.NewGuid().ToString("N")+".exe");File.Copy(Assembly.GetExecutingAssembly().Location,temp);ProcessStartInfo psi=new ProcessStartInfo(temp,"--uninstall-worker "+Process.GetCurrentProcess().Id);psi.UseShellExecute=false;psi.CreateNoWindow=true;Process.Start(psi);return 0;}
+  Form f=new Form{Text="景览 · 安装向导",Size=new Size(640,460),StartPosition=FormStartPosition.CenterScreen,FormBorderStyle=FormBorderStyle.FixedDialog,MaximizeBox=false,Font=new Font("Microsoft YaHei UI",11),BackColor=Color.White};
+  TextBox label=new TextBox{Dock=DockStyle.Fill,Multiline=true,ReadOnly=true,ScrollBars=ScrollBars.Vertical,WordWrap=true,BorderStyle=BorderStyle.None,BackColor=Color.White,Text="景览 · 图片预览修复助手\r\n\r\n安装到当前用户，无需管理员权限。\r\n支持目标：Windows 7 SP1–Windows 11，需 .NET 4.0+。\r\n\r\n安装位置：\r\n"+Target+"\r\n\r\n安装包含主程序、使用说明、卸载器和开始菜单入口。\r\n不附带第三方专有格式解码器；不会自动修改预览设置。\r\n\r\n微信公众号：景同志    小红书：景同学"};Panel content=new Panel{Dock=DockStyle.Fill,Padding=new Padding(24)};content.Controls.Add(label);f.Controls.Add(content);
+  Button b=new Button{Text="安装",Dock=DockStyle.Bottom,Height=48};f.Controls.Add(b);b.BringToFront();content.BringToFront();b.Click+=delegate{b.Enabled=false;try{Install();MessageBox.Show("安装完成。可从开始菜单启动景览。","景览");f.Close();}catch(Exception e){MessageBox.Show("安装失败："+e.Message);b.Enabled=true;}};if(args.Length>1&&args[0]=="--screenshot"){if(args.Length>2)f.Font=new Font(f.Font.FontFamily,Single.Parse(args[2],System.Globalization.CultureInfo.InvariantCulture));f.Show();Application.DoEvents();using(Bitmap bitmap=new Bitmap(f.Width,f.Height)){f.DrawToBitmap(bitmap,new Rectangle(0,0,f.Width,f.Height));bitmap.Save(args[1],System.Drawing.Imaging.ImageFormat.Png);}f.Dispose();return 0;}Application.Run(f);return 0;
+ }catch(Exception e){MessageBox.Show(e.Message,"景览安装/卸载失败");return 1;}}
+ static void Extract(string name,string destination){using(Stream source=Assembly.GetExecutingAssembly().GetManifestResourceStream(name)){if(source==null)throw new InvalidDataException("安装资源缺失："+name);using(FileStream output=File.Create(destination))source.CopyTo(output);}}
+ static void Install(){Directory.CreateDirectory(Target);Extract("App",Path.Combine(Target,"JingPreviewDoctor.exe"));Extract("Readme",Path.Combine(Target,"使用说明.txt"));string self=Assembly.GetExecutingAssembly().Location;string uninstaller=Path.Combine(Target,"Uninstall.exe");if(!String.Equals(self,uninstaller,StringComparison.OrdinalIgnoreCase))File.Copy(self,uninstaller,true);
+  Directory.CreateDirectory(Menu);Shortcut(Path.Combine(Menu,"景览.lnk"),Path.Combine(Target,"JingPreviewDoctor.exe"),"");Shortcut(Path.Combine(Menu,"卸载景览.lnk"),uninstaller,"--uninstall");
+  using(RegistryKey k=Registry.CurrentUser.CreateSubKey(UninstallKey)){k.SetValue("DisplayName","景览 · 图片预览修复助手");k.SetValue("DisplayVersion","1.2.1");k.SetValue("Publisher","景同志 / 景同学");k.SetValue("InstallLocation",Target);k.SetValue("DisplayIcon",Path.Combine(Target,"JingPreviewDoctor.exe"));k.SetValue("UninstallString","\""+uninstaller+"\" --uninstall");k.SetValue("NoModify",1,RegistryValueKind.DWord);k.SetValue("NoRepair",1,RegistryValueKind.DWord);}
+ }
+ static void Shortcut(string path,string target,string args){Type t=Type.GetTypeFromProgID("WScript.Shell");object shell=Activator.CreateInstance(t);object link=t.InvokeMember("CreateShortcut",BindingFlags.InvokeMethod,null,shell,new object[]{path});try{Type l=link.GetType();l.InvokeMember("TargetPath",BindingFlags.SetProperty,null,link,new object[]{target});l.InvokeMember("Arguments",BindingFlags.SetProperty,null,link,new object[]{args});l.InvokeMember("WorkingDirectory",BindingFlags.SetProperty,null,link,new object[]{Target});l.InvokeMember("Save",BindingFlags.InvokeMethod,null,link,null);}finally{System.Runtime.InteropServices.Marshal.ReleaseComObject(link);System.Runtime.InteropServices.Marshal.ReleaseComObject(shell);}}
+ static void Uninstall(){foreach(Process p in Process.GetProcessesByName("JingPreviewDoctor")){using(p){try{if(String.Equals(p.MainModule.FileName,Path.Combine(Target,"JingPreviewDoctor.exe"),StringComparison.OrdinalIgnoreCase))throw new IOException("请先退出正在运行的景览主程序，再执行卸载。");}catch(System.ComponentModel.Win32Exception){}}}
+  foreach(string n in new[]{"景览.lnk","卸载景览.lnk"}){string p=Path.Combine(Menu,n);if(File.Exists(p))File.Delete(p);}if(Directory.Exists(Menu)&&Directory.GetFileSystemEntries(Menu).Length==0)Directory.Delete(Menu);
+  foreach(string n in new[]{"JingPreviewDoctor.exe","使用说明.txt","Uninstall.exe"}){string p=Path.Combine(Target,n);if(File.Exists(p))File.Delete(p);}if(Directory.Exists(Target)&&Directory.GetFileSystemEntries(Target).Length==0)Directory.Delete(Target);Registry.CurrentUser.DeleteSubKeyTree(UninstallKey,false);
+ }
+ static int SelfTest(string report){
+  string fixture=Path.Combine(Path.GetDirectoryName(Path.GetFullPath(report)),"setup-test-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(fixture);
+  Target=Path.Combine(fixture,"installed");Menu=Path.Combine(fixture,"start-menu");UninstallKey=@"Software\JingPreviewDoctor\InstallerTest\"+Guid.NewGuid().ToString("N");
+  var lines=new System.Collections.Generic.List<string>();int status=0;
+  try{Install();string app=Path.Combine(Target,"JingPreviewDoctor.exe");if(!File.Exists(app)||!File.Exists(Path.Combine(Target,"Uninstall.exe"))||!File.Exists(Path.Combine(Target,"使用说明.txt")))throw new IOException("Installed payload missing");
+   using(System.Security.Cryptography.SHA256 hash=System.Security.Cryptography.SHA256.Create())using(Stream source=Assembly.GetExecutingAssembly().GetManifestResourceStream("App"))using(Stream installed=File.OpenRead(app)){if(Convert.ToBase64String(hash.ComputeHash(source))!=Convert.ToBase64String(hash.ComputeHash(installed)))throw new IOException("Payload hash mismatch");}lines.Add("PASS Installer extracts matching executable / readme / uninstaller");
+   foreach(string n in new[]{"景览.lnk","卸载景览.lnk"})if(!File.Exists(Path.Combine(Menu,n)))throw new IOException("Shortcut missing: "+n);lines.Add("PASS Installer creates application and uninstall shortcuts in isolated menu");
+   using(RegistryKey key=Registry.CurrentUser.OpenSubKey(UninstallKey))if(key==null||Convert.ToString(key.GetValue("InstallLocation"))!=Target||!Convert.ToString(key.GetValue("UninstallString")).Contains("--uninstall"))throw new IOException("Uninstall registration invalid");lines.Add("PASS Installer writes uninstall metadata in isolated HKCU key");
+   Uninstall();using(RegistryKey key=Registry.CurrentUser.OpenSubKey(UninstallKey))if(key!=null)throw new IOException("Uninstall registry residue");if(Directory.Exists(Target)||Directory.Exists(Menu))throw new IOException("Uninstall file residue");lines.Add("PASS Uninstall removes installed files / shortcuts / isolated registry key");
+  }catch(Exception e){status=1;lines.Add("FAIL "+e);}finally{try{if(UninstallKey.StartsWith(@"Software\JingPreviewDoctor\InstallerTest\",StringComparison.Ordinal))Uninstall();if(Directory.Exists(fixture)&&Directory.GetFileSystemEntries(fixture).Length==0)Directory.Delete(fixture);}catch(Exception e){status=1;lines.Add("FAIL Test cleanup: "+e.Message);}}
+  lines.Add("Formal installation / actual Start Menu / actual Windows uninstall list unchanged.");File.WriteAllLines(report,lines.ToArray(),System.Text.Encoding.UTF8);return status;
+ }
+}
