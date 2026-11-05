@@ -1,104 +1,103 @@
-# 景览 · 图片预览修复助手 (JingPreviewDoctor)
+# Jing Preview Doctor (景览)
 
-![景览 1.2.1 封面横幅](images/cover.png)
+![Jing Preview Doctor 1.2.1 cover banner](images/cover.png)
 
-> 让图片重新可见 —— 缩略图修复 / 格式诊断 / 本地预览
+> Make images visible again — thumbnail repair / format diagnostics / local preview
 
-「景览」是一款面向设计师与摄影工作者的 Windows 本地工具，专注解决一个常见问题：**文件有图标却没有缩略图**。它提供一键修复当前用户的显示设置、清理可释放的缩略图缓存、诊断系统格式处理程序，并内置轻量图片预览与批量转存能力。
+**Jing Preview Doctor** is a local Windows tool for designers and photographers, focused on one common problem: **files that have an icon but no thumbnail**. It offers one-click repair of the current user's display settings, cleanup of reclaimable thumbnail caches, diagnostics of system format handlers, and a built-in lightweight image preview and batch re-save.
 
-- 当前版本：**1.2.1**
-- 运行环境：Windows 7 SP1 – Windows 11，需 .NET Framework 4.0 或更高
-- 性质：**本地运行、无联网、无遥测**
+- Current version: **1.2.1**
+- Environment: Windows 7 SP1 – Windows 11, requires .NET Framework 4.0 or higher
+- Nature: **runs locally, no network, no telemetry**
 
 ---
 
-## ✨ 功能特性
+## ✨ Features
 
-- **修复中心**：一键修复当前用户的四个显示设置，自动备份后再启用缩略图、预览处理程序与缓存；清理可删除的 `thumbcache_*.db` 并通知 Shell 刷新。
-- **诊断报告**：逐文件实际尝试内置 / 系统解码，生成可读性诊断报告，可导出日志。
-- **格式与处理程序**：列出 42 种扩展名的缩略图与预览窗格注册情况，区分「应用内预览 / 系统缩略图 / 预览窗格」三种能力。
-- **图片预览与转存**：打开或拖入图片，等比例查看、左/右旋转、翻转、适应窗口；支持 PNG / JPEG 转存（最长边限制、JPEG 质量 1–100、透明区填白），可调用外部 ImageMagick 处理更多格式。
-- **批量工作台**：多文件 / 文件夹（含子目录）扫描、路径去重、任务队列、并行解码（独立进程、30 秒超时）、结果筛选与 CSV 导出。
-- **任务持久化**：队列可保存为 `.jingqueue`，自动记录上次队列，支持「继续未完成 / 转存选中项 / 移除成功项」。
-- **设置与备份**：手动备份、备份恢复、日志与输出目录集中管理、Shell 刷新；每次修复前自动备份，恢复仅作用于设置。
+- **Repair center**: one click fixes four display settings for the current user, auto-backing-up first, then enables thumbnails, preview handlers and cache; cleans removable `thumbcache_*.db` and notifies the Shell to refresh.
+- **Diagnostic report**: per-file, actually tries the built-in / system decoder, produces a readable diagnostic report, exportable as a log.
+- **Formats & handlers**: lists thumbnail and preview-pane registration for 42 extensions, distinguishing three capabilities: "in-app preview / system thumbnail / preview pane".
+- **Image preview & re-save**: open or drop in an image, view at aspect ratio, rotate left/right, flip, fit to window; supports PNG / JPEG re-save (long-edge limit, JPEG quality 1–100, transparent areas filled white), and can call external ImageMagick for more formats.
+- **Batch workbench**: multi-file / folder (including subfolders) scanning, path de-duplication, task queue, parallel decoding (separate process, 30-second timeout), result filtering and CSV export.
+- **Task persistence**: the queue can be saved as `.jingqueue`, the last queue is recorded automatically, supporting "resume unfinished / re-save selected / remove succeeded".
+- **Settings & backup**: manual backup, backup restore, centralized log and output directory management, Shell refresh; auto-backup before every repair, restore affects settings only.
 
-## 🖼 界面预览
+## 🖼 Screenshots
 
-| 修复中心（首页） | 图片预览与转存 | 批量工作台 |
+| Repair center (home) | Image preview & re-save | Batch workbench |
 | --- | --- | --- |
-| ![修复中心](images/home-repair-center.png) | ![图片预览与转存](images/image-preview.png) | ![批量工作台](images/batch-workbench.png) |
+| ![Repair center](images/home-repair-center.png) | ![Image preview & re-save](images/image-preview.png) | ![Batch workbench](images/batch-workbench.png) |
 
-> 左：一键修复与诊断；中：等比例查看、旋转翻转、PNG/JPEG 转存；右：批量扫描、解码检测与结果导出。
+> Left: one-click repair and diagnostics; middle: aspect-ratio view, rotate/flip, PNG/JPEG re-save; right: batch scan, decode detection and result export.
 
-## 📥 下载
+## 📥 Download
 
-请前往 **Releases** 获取最新版本：
+Get the latest version from **Releases**:
 
-- **单文件版** `JingPreviewDoctor.exe`：无需随附 DLL，双击即可运行（仍需系统 .NET Framework 4.0+）。
-- **安装版** `JingPreviewDoctor-Setup.exe`：当前用户安装，含开始菜单入口与系统应用列表卸载入口。
+- **Single-file build** `JingPreviewDoctor.exe`: no companion DLLs needed, double-click to run (still requires system .NET Framework 4.0+).
+- **Installer** `JingPreviewDoctor-Setup.exe`: per-user install, with Start Menu entry and system "Apps & features" uninstall entry.
 
-> GitHub Releases 页面：<https://github.com/jingpanlong/JingPreviewDoctor/releases>
+> GitHub Releases page: <https://github.com/jingpanlong/JingPreviewDoctor/releases>
 
-如需校验完整性，随包提供 `SHA256.txt` 清单。程序与安装包未做数字签名，Windows 可能提示未知发布者，请按需核验。
+A `SHA256.txt` manifest is included for integrity verification. The program and installer are not digitally signed; Windows may show an unknown publisher — verify as needed.
 
-## 🚀 使用步骤
+## 🚀 Steps
 
-1. 运行主程序，点击「诊断并生成报告」。
-2. 点击「一键修复」：自动备份当前用户显示设置后启用缩略图、预览处理程序与缓存，并清理可删除的缓存。
-3. 重新打开文件夹并切换为中 / 大图标；`Alt + P` 切换预览窗格。被资源管理器占用的缓存会跳过，可注销再登录后重试（程序不结束 Explorer）。
-4. 专有格式仍无预览时，在「格式与处理程序」查看现有注册；未安装处理程序的格式无法仅靠设置修复。
-5. 「恢复设置备份」选择 `backup-*.xml`，仅恢复设置（缓存可由系统重建）。
+1. Run the main program and click "Diagnose and generate report".
+2. Click "One-click repair": after auto-backing-up the current user's display settings, it enables thumbnails, preview handlers and cache, and cleans removable caches.
+3. Reopen the folder and switch to medium / large icons; `Alt + P` toggles the preview pane. Caches held by Explorer are skipped; you can sign out and back in to retry (the program does not terminate Explorer).
+4. If a proprietary format still has no preview, check the existing registration in "Formats & handlers"; formats without an installed handler cannot be fixed by settings alone.
+5. "Restore settings backup" selects a `backup-*.xml` and restores settings only (the cache can be rebuilt by the system).
 
-## 📐 支持与限制（请务必阅读）
+## 📐 Support & limitations (please read)
 
-没有「所有格式都能修复」的真实保证。本程序**不安装 Shell 扩展**，不为系统新增 AI / CDR / PDF / RAW 等解码能力。
+There is no real guarantee that "every format can be repaired". This program **does not install a Shell extension** and adds no AI / CDR / PDF / RAW decoding capability to the system.
 
-- **内置支持**：JPG / JPEG / PNG / BMP / GIF / TIFF / ICO（GDI+，动画 / 多页仅首帧）；PSD 仅 v1、8 位 RGB / 灰度、原始或 PackBits RLE 的合成图；PNM / PPM / PGM / PBM 支持 P1–P6（8/16 位采样，不支持 PAM / PFM）。
-- **非内置**：PSB、AI、EPS、PDF、RAW 系列、CDR、EXR、HDR、WEBP、HEIC、AVIF、SVG、TGA、DDS 等。可尝试已安装的 Shell 处理程序或外部 ImageMagick；能力取决于文件版本、构建与依赖，未逐格式保证。
-- **输入限制**：内置预览输入上限 512 MB / 2400 万像素；Shell 缩略图最高 1024 px；外部预览最高 1600 px。转存的是预览图，并非无损原图导出或 RAW 显影。
-- 系统策略禁止预览时不修改设置，请联系管理员；文件损坏、权限不足、云文件未下载、编解码器崩溃不在一键修复范围。
+- **Built-in support**: JPG / JPEG / PNG / BMP / GIF / TIFF / ICO (GDI+, animation / multi-page first frame only); PSD v1 only, 8-bit RGB / grayscale, raw or PackBits RLE composite; PNM / PPM / PGM / PBM P1–P6 (8/16-bit samples, no PAM / PFM).
+- **Not built-in**: PSB, AI, EPS, PDF, RAW family, CDR, EXR, HDR, WEBP, HEIC, AVIF, SVG, TGA, DDS, etc. Try an installed Shell handler or external ImageMagick; capability depends on file version, build and dependencies, not guaranteed per format.
+- **Input limits**: built-in preview input cap 512 MB / 24 megapixels; Shell thumbnail up to 1024 px; external preview up to 1600 px. What is re-saved is a preview image, not a lossless original export or RAW development.
+- If system policy forbids preview, settings are not modified — contact your admin; corrupt files, insufficient permissions, undownloaded cloud files, and codec crashes are outside one-click repair.
 
-## 🔧 从源码构建
+## 🔧 Build from source
 
-无需 NuGet，使用系统自带的 .NET Framework C# 编译器即可。
+No NuGet needed; uses the system's .NET Framework C# compiler.
 
 ```powershell
-# 在源码目录中执行（需要 .NET Framework 4.0+）
+# In the source directory (requires .NET Framework 4.0+)
 powershell -ExecutionPolicy Bypass -File build.ps1
 ```
 
-产物位于 `dist/`：
+Outputs in `dist/`:
+- `dist/JingPreviewDoctor.exe` — single-file main program
+- `dist/JingPreviewDoctor-Setup.exe` — per-user installer
+- `dist/使用说明.txt` — usage notes (also embedded in the installer)
 
-- `dist/JingPreviewDoctor.exe` —— 单文件主程序
-- `dist/JingPreviewDoctor-Setup.exe` —— 当前用户安装版
-- `dist/使用说明.txt` —— 使用说明（亦嵌入安装包）
-
-自检与验证（开发者）：
+Self-test & verification (for developers):
 
 ```text
-JingPreviewDoctor.exe --self-test 报告路径
-JingPreviewDoctor.exe --ui-smoke-test 报告路径
-JingPreviewDoctor.exe --screenshot 输出PNG路径 [页签名 窗口大小]
-JingPreviewDoctor-Setup.exe --self-test 报告路径
+JingPreviewDoctor.exe --self-test report-path
+JingPreviewDoctor.exe --ui-smoke-test report-path
+JingPreviewDoctor.exe --screenshot output-PNG-path [page-key window-size]
+JingPreviewDoctor-Setup.exe --self-test report-path
 ```
 
-## 🔒 隐私与位置
+## 🔒 Privacy & locations
 
-- 主程序**无网络请求、无遥测**；原始图片不被自动修改，转存目标路径由用户选择。
-- 日志与备份：`%LOCALAPPDATA%\JingPreviewDoctor`
-- 安装目录：`%LOCALAPPDATA%\Programs\JingPreviewDoctor`
-- 卸载保留日志、设置备份与已修复的设置；如需回滚设置，请在卸载前恢复备份。
+- The main program makes **no network requests, no telemetry**; original images are not auto-modified, and the re-save target path is chosen by the user.
+- Logs & backups: `%LOCALAPPDATA%\JingPreviewDoctor`
+- Install directory: `%LOCALAPPDATA%\Programs\JingPreviewDoctor`
+- Uninstall keeps logs, settings backups and the repaired settings; to roll back settings, restore the backup before uninstalling.
 
-## 📄 开源许可
+## 📄 Open-source license
 
-本项目以 [MIT License](./LICENSE) 开源。
+This project is open source under the [MIT License](./LICENSE).
 
-## 📮 联系作者
+## 📮 Contact author
 
-- 微信公众号：**景同志**
-- 小红书：**景同学**
-- 项目仓库与 Issue：<https://github.com/jingpanlong/JingPreviewDoctor>
+- WeChat Official Account: **景同志**
+- Xiaohongshu: **景同学**
+- Repository & Issues: <https://github.com/jingpanlong/JingPreviewDoctor>
 
 ---
 
-*景览 · 让设置问题有修复入口，让格式限制有清楚说明。*
+*Jing Preview Doctor — gives setting problems a repair entry, and format limits a clear explanation.*
